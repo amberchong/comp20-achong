@@ -1,20 +1,102 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8" />
-<title>Union Strike Folk Song</title>
-<link rel="stylesheet" href="style.css" type="text/css" />
+    <meta charset="utf-8" />
+    <title>Union Strike Folk Song</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
 <body>
+    <h1 id="title">Union Strike Folk Song</h1>
+    <video src="https://www.cs.tufts.edu/comp/20/butwehavethepower.mp4" id="butwehavethepower" controls></video>
+    <div id="lyrics"></div>
+    
+    <!-- TAKE OUT BEFORE SUBMITTING -->
+    <p> Playback position: <span id="demo"></span></p>
+    
 
-<h1 id="title">Union Strike Folk Song</h1>
+    <script>
+    // Get video element
+    var x = document.getElementById("butwehavethepower");
 
-<video src="https://www.cs.tufts.edu/comp/20/butwehavethepower.mp4" id="butwehavethepower" controls></video>
-<div id="lyrics"></div>
+    var subtitles = document.getElementById("butwehavethepower");
 
-<script>
-	// Complete this section and create a CSS file named style.css
-</script>
+    // Add timeupdate event - run function if current playback position has changed
+    x.addEventListener("timeupdate", playbackPos);
+
+    subtitles.addEventListener("timeupdate", showLyric);
+
+    // Function Definitions
+    function playbackPos() {
+        document.getElementById("demo").innerHTML = x.currentTime;
+    }
+
+    function showLyric() {
+        var lyric = document.getElementById("lyrics");
+
+        if (x.currentTime > 5.9959 && x.currentTime < 8.388658) {
+            lyric.innerHTML = "Lisa: Come gather round, children";
+        }
+        if ((x.currentTime > 8.388658) && (x.currentTime < 10.492219)) {
+            lyric.innerHTML = "It's high time ye learned";
+        }
+        if ((x.currentTime > 10.492219) && (x.currentTime < 13.14975)) {
+            lyric.innerHTML = "Bout a hero named Homer";
+        }
+        if ((x.currentTime > 13.14975) && (x.currentTime < 15.642871)) {
+            lyric.innerHTML = "And a devil named Burns.";
+        }
+        if ((x.currentTime > 16.89064) && (x.currentTime < 18.988475)) {
+            lyric.innerHTML = "We'll march 'till we drop";
+        }
+        if ((x.currentTime > 18.988475) && (x.currentTime < 21.486443)) {
+            lyric.innerHTML = "The girls and the fellas.";
+        }
+        if ((x.currentTime > 21.486443) && (x.currentTime < 23.207673)) {
+            lyric.innerHTML = "We'll fight 'till the death";
+        }
+        if ((x.currentTime > 23.207673) && (x.currentTime < 27.335341)) {
+            lyric.innerHTML = "Or else fold like umbrellas.";
+        }
+        if ((x.currentTime > 27.33897) && (x.currentTime < 37.842737)) {
+            lyric.innerHTML = " ";
+        }
+        if ((x.currentTime > 37.842737) && (x.currentTime < 40.512266)) {
+            lyric.innerHTML = "So we'll march day and night";
+        }
+        if ((x.currentTime > 40.512266) && (x.currentTime < 42.915169)) {
+            lyric.innerHTML = "By the big cooling tower.";
+        }
+        if ((x.currentTime > 42.915169) && (x.currentTime < 45.350531)) {
+            lyric.innerHTML = "They have the plant";
+        }
+        if ((x.currentTime > 45.350531) && (x.currentTime < 49.557997)) {
+            lyric.innerHTML = "But we have the power.";
+        }
+        if ((x.currentTime > 52.848986) && (x.currentTime < 54.565244)) {
+            lyric.innerHTML = "Lenny: Now do \"Classical Gas!\"";
+        }
+        if ((x.currentTime > 54.839188) && (x.currentTime < 72.254243)) {
+            lyric.innerHTML = " ";
+        }
+        if ((x.currentTime > 72.65603) && (x.currentTime < 74.407515)) {
+            lyric.innerHTML = "So we'll march day and night";
+        }
+        if ((x.currentTime > 74.407515) && (x.currentTime < 77.455007)) {
+            lyric.innerHTML = "By the big cooling tower.";
+        }
+        if ((x.currentTime > 77.455007) && (x.currentTime < 79.785249)) {
+            lyric.innerHTML = "They have the plant";
+        }
+        if ((x.currentTime > 79.785249) && (x.currentTime < 82.17058)) {
+            lyric.innerHTML = "But we have the power.";
+        }
+        if (x.currentTime > 82.17058) {
+            lyric.innerHTML = " ";
+        }
+    }
+    </script>
 </body>
-</html>	
+
+</html>
