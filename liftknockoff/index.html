@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <title>Lift Knockoff</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <span class="metadata-marker" style="display: none;" data-region_tag="html-body"></span>
+    <div id="map"></div>
+    <!-- LOAD GOOGLE MAPS -->
+    <script>
+    var map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8
+        });
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9sQaGQMUn1TEZG3C11LjRlpQAppS4WGk&callback=initMap" async defer>
+    </script>
+    <!-- GET USER LOCATION -->
+    <script>
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successFunction);
+    } else {
+        alert('It seems like Geolocation, which is required for this page, is not enabled in your browser. Please use a browser which supports it.');
+    }
+
+    function successFunction(position) {
+        var lat = position.coords.latitude;
+        var long = position.coords.longitude;
+        var param = "username=Q8yuSceW" + "&lat=" + lat + "lng=" + long;
+        console.log('Your latitude is: ' + lat + ' and longitude is: ' + long);
+        console.log('Your parameter is: ' + param);
+
+        // ADD ERRORFUNCTION IF NECESSARY
+
+        // SEND LOCATION TO RIDE REQUEST API
+        var xhr = new XMLHttpRequest();
+        var url = 'get_data.php';
+        xhr.open('POST', url, true);
+        
+
+        //Send the proper header information along with the request
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        xhr.onreadystatechange = function() { //Call a function when the state changes.
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                alert(xhr.responseText);
+            }
+        }
+        xhr.send(param);
+    }
+    </script>
+</body>
+
+</html>
