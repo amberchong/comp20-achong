@@ -6,58 +6,94 @@
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <link href="style.css" rel="stylesheet" />
+
+	<script>
+	var map;
+	
+	function initMap() {
+	    var loc = { lat: -34.397, lng: 150.644 };
+	    map = new google.maps.Map(document.getElementById('map'), {
+	        center: loc,
+	        zoom: 8
+	    });
+	}
+	
+	if (navigator.geolocation) {
+	    navigator.geolocation.getCurrentPosition(successFunction);
+	} 
+	else {
+	    alert('It seems like Geolocation, which is required for this page, is not enabled in your browser. Please use a browser which supports it.');
+	}
+
+	var param;
+
+	function successFunction(position) {
+	    var lat = position.coords.latitude;
+	    var lng = position.coords.longitude;
+	    loc = { 
+    		lat: position.coords.latitude,
+          	lng: position.coords.longitude
+        };
+	    param = "username=Q8yuSceW" + "&lat=" + lat + "&lng=" + lng;
+
+	    console.log('Your latitude is: ' + lat + ' and longitude is: ' + lng);
+	    console.log('Your parameter is: ' + param);
+
+	    map.setCenter({lat:lat, lng:lng});
+	    
+	    // ADD CUSTOM MARKER AT LOCATION    
+	    var image = 'marker.png';
+	    var marker = new google.maps.Marker({
+	        position: loc,
+	        map: map,
+	        icon: image
+	    });
+
+	    loadDrivers(param);
+	    // ADD ERRORFUNCTION IF NECESSARY
+	}
+	
+	function loadDrivers(param) {
+		// Make an instance of xhr
+	    xhr = new XMLHttpRequest();
+	    var url = 'https://hans-moleman.herokuapp.com/rides';
+
+	    // Make request to JSON source
+	    xhr.open('POST', url, true);
+
+	    // Send header information along with request
+	    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+	    // Response back
+	    xhr.onreadystatechange = function() {
+	        console.log('Console readystate is: ' + xhr.readyState);
+	        if (xhr.readyState == 4 && xhr.status == 200) {
+	            data = xhr.responseText;
+	            console.log(data);
+	            loc = JSON.parse(data);
+	            driversList = document.getElementById("drivers");
+	            driversList.innerHTML = "";
+	            for (count = 0; count < data.length; count++) {
+	            	// console.log('in for loop');
+	            	// console.log(data[count]._id + data[count].username);
+	                driversList.innerHTML += "<p> vehicle id: " + data[count]._id + "user: " + data[count].username + "</p>";
+	            }
+	        }
+	    };
+	    console.log('my param in loadDrivers is: ' + param);
+	    xhr.send(param);
+	}
+	
+</script>
 </head>
 
-<body>
+<body onclick="loadDrivers(param)">
+	<h1>Drivers</h1>
     <span class="metadata-marker" style="display: none;" data-region_tag="html-body"></span>
     <div id="map"></div>
-    <!-- LOAD GOOGLE MAPS -->
-    <script>
-    var map;
-
-    function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8
-        });
-    }
-    </script>
+    <div id="drivers">Trying to determine drivers...</div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9sQaGQMUn1TEZG3C11LjRlpQAppS4WGk&callback=initMap" async defer>
-    </script>
-    <!-- GET USER LOCATION -->
-    <script>
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(successFunction);
-    } else {
-        alert('It seems like Geolocation, which is required for this page, is not enabled in your browser. Please use a browser which supports it.');
-    }
-
-    function successFunction(position) {
-        var lat = position.coords.latitude;
-        var long = position.coords.longitude;
-        var param = "username=Q8yuSceW" + "&lat=" + lat + "lng=" + long;
-        console.log('Your latitude is: ' + lat + ' and longitude is: ' + long);
-        console.log('Your parameter is: ' + param);
-
-        // ADD ERRORFUNCTION IF NECESSARY
-
-        // SEND LOCATION TO RIDE REQUEST API
-        var xhr = new XMLHttpRequest();
-        var url = 'get_data.php';
-        xhr.open('POST', url, true);
-        
-
-        //Send the proper header information along with the request
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-        xhr.onreadystatechange = function() { //Call a function when the state changes.
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                alert(xhr.responseText);
-            }
-        }
-        xhr.send(param);
-    }
-    </script>
+	</script>
 </body>
 
 </html>

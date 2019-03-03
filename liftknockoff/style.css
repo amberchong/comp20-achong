@@ -1,8 +1,15 @@
 #map {
     height: 100%;
-  }
-  html, body {
+}
+
+#drivers {
+	font-family: Comic Sans MS;
+	font-size: 12pt;
+	color: black;
+}
+
+html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-  }
+}
