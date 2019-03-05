@@ -11,49 +11,53 @@
 	var map;
 	
 	function initMap() {
-	    var loc = { lat: -34.397, lng: 150.644 };
+	    var loc = { lat: 42.413, lng: -71.117 };
 	    map = new google.maps.Map(document.getElementById('map'), {
 	        center: loc,
-	        zoom: 8
+	        zoom: 5
 	    });
-	}
 	
-	if (navigator.geolocation) {
-	    navigator.geolocation.getCurrentPosition(successFunction);
-	} 
-	else {
-	    alert('It seems like Geolocation, which is required for this page, is not enabled in your browser. Please use a browser which supports it.');
+		if (navigator.geolocation) {
+	   		navigator.geolocation.getCurrentPosition(successFunction); 
+		}
+    	else {
+        	handleLocationError(false, infoWindow, map.getCenter());
+    	}
 	}
+      
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    	infoWindow.setPosition(pos);
+    	infoWindow.setContent(browserHasGeolocation ?
+                          'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+   		infoWindow.open(map);
+    }
 
 	var param;
+	var myloc;
 
 	function successFunction(position) {
 	    var lat = position.coords.latitude;
 	    var lng = position.coords.longitude;
-	    loc = { 
+	    myloc = { 
     		lat: position.coords.latitude,
           	lng: position.coords.longitude
         };
 	    param = "username=Q8yuSceW" + "&lat=" + lat + "&lng=" + lng;
-
-	    console.log('Your latitude is: ' + lat + ' and longitude is: ' + lng);
-	    console.log('Your parameter is: ' + param);
 
 	    map.setCenter({lat:lat, lng:lng});
 	    
 	    // ADD CUSTOM MARKER AT LOCATION    
 	    var image = 'marker.png';
 	    var marker = new google.maps.Marker({
-	        position: loc,
+	        position: myloc,
 	        map: map,
 	        icon: image
 	    });
-
-	    loadDrivers(param);
-	    // ADD ERRORFUNCTION IF NECESSARY
+	    loadUsers(param);
 	}
 	
-	function loadDrivers(param) {
+	function loadUsers(param) {
 		// Make an instance of xhr
 	    xhr = new XMLHttpRequest();
 	    var url = 'https://hans-moleman.herokuapp.com/rides';
@@ -66,32 +70,153 @@
 
 	    // Response back
 	    xhr.onreadystatechange = function() {
-	        console.log('Console readystate is: ' + xhr.readyState);
 	        if (xhr.readyState == 4 && xhr.status == 200) {
 	            data = xhr.responseText;
 	            console.log(data);
-	            loc = JSON.parse(data);
-	            driversList = document.getElementById("drivers");
-	            driversList.innerHTML = "";
-	            for (count = 0; count < data.length; count++) {
-	            	// console.log('in for loop');
-	            	// console.log(data[count]._id + data[count].username);
-	                driversList.innerHTML += "<p> vehicle id: " + data[count]._id + "user: " + data[count].username + "</p>";
+	            list = JSON.parse(data);
+	            usersList = document.getElementById("users");
+	            usersList.innerHTML = "";
+	            if (list.vehicles) {
+	            	//do i need to check if length is null too
+	            	for (count = 0; count < data.length; count++) {
+	            		loc = { lat: list.vehicles[count].lat, lng: list.vehicles[count].lng};
+	            		user = list.vehicles[count].username;
+	            		var distance = haversineDistance(loc, myloc, true);
+	           			markVehicles(distance, loc, user);
+	            	}
+	            }
+	            else {
+	            	for (count = 0; count < data.length; count++) {
+	            		loc = { lat: list.passengers[count].lat, lng: list.passengers[count].lng};
+	            		user = list.passengers[count].username;
+	            		var distance = haversineDistance(loc, myloc, true);
+	           			markPassengers(distance, loc, user);
+	            	}
 	            }
 	        }
 	    };
-	    console.log('my param in loadDrivers is: ' + param);
 	    xhr.send(param);
 	}
-	
+
+	function markVehicles(distance, loc, user) {
+		if (user == "WEINERMOBILE") {
+			var weiner = 'weinermobile.png';
+			var marker = new google.maps.Marker({
+	        position: loc,
+	        map: map,
+	        icon: weiner
+	    	});
+
+	    	var infoWindow = new google.maps.InfoWindow;
+			info = '<p> Username: ' + user + '</p>' + '<p>Distance from you: ' + distance + 'mi</p>';
+			infoWindow.setPosition(loc);
+			infoWindow.setContent(info);
+			marker.addListener('click', function(){infoWindow.open(map, this);
+			});
+		}
+		else {
+			var car = 'car.png';
+			var marker = new google.maps.Marker({
+	        position: loc,
+	        map: map,
+	        icon: car
+			});
+
+			var infoWindow = new google.maps.InfoWindow;
+			info = '<p> Username: ' + user + '</p>' + '<p>Distance from you: ' + distance + 'mi</p>';
+			infoWindow.setPosition(loc);
+			infoWindow.setContent(info);
+			marker.addListener('click', function(){infoWindow.open(map, this);
+			});
+		}
+		
+	}
+
+	function markPassengers(distance, loc, user) {
+		if (user == "WEINERMOBILE") {
+			var weiner = 'weinermobile.png';
+			var marker = new google.maps.Marker({
+	        position: loc,
+	        map: map,
+	        icon: weiner
+	    	});
+
+	    	var infoWindow = new google.maps.InfoWindow;
+			info = '<p> Username: ' + user + '</p>' + '<p>Distance from you: ' + distance + 'mi</p>';
+			infoWindow.setPosition(loc);
+			infoWindow.setContent(info);
+			marker.addListener('click', function(){infoWindow.open(map, this);
+			});
+		}
+		else {
+			var person = 'person.png';
+			var marker = new google.maps.Marker({
+	        position: loc,
+	        map: map,
+	        icon: person
+			});
+
+			var infoWindow = new google.maps.InfoWindow;
+			info = '<p> Username: ' + user + '</p>' + '<p>Distance from you: ' + distance + 'mi</p>';
+			infoWindow.setPosition(loc);
+			infoWindow.setContent(info);
+			marker.addListener('click', function(){infoWindow.open(map, this);
+			});
+		}
+		
+	}
+
+	function haversineDistance(loc, myloc, isMiles) {
+  		function toRad(x) {
+    		return x * Math.PI / 180;
+  		}
+
+	  	var lon1 = myloc.lng;
+	  	var lat1 = myloc.lat;
+
+	  	var lon2 = loc.lng;
+	  	var lat2 = loc.lat;
+
+	  	var R = 6371; // km
+
+	  	var x1 = lat2 - lat1;
+	  	var dLat = toRad(x1);
+	  	var x2 = lon2 - lon1;
+	  	var dLon = toRad(x2)
+	  	var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+	    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+	    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+	  	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	  	var d = R * c;
+
+	  	if(isMiles) d /= 1.60934;
+
+	 	return d;
+	}
+
+	// function myInfoWindow(myloc, user, distance, nearest) {
+	// 	if (user == 'WEINERMOBILE') {
+	// 		var info = '<p> Nearest vehicle: ' + nearest + '</p>' +'<p> The Weinermobile is ' + distance + ' mi away from me! </p>';
+	// 	}
+	// 	else {
+	// 		var info = '<p> Nearest vehicle: ' + nearest + '</p>' + '<p> The Weinermobile is nowhere to be seen. </p>';
+	// 	}
+		
+	// 	infoWindow = new google.maps.InfoWindow;
+		
+	// 	infoWindow.setPosition(myloc);
+	// 	infoWindow.setContent(info);
+	// 	marker.addListener('click', function(){infoWindow.open(map, this);
+	// 	});
+	// }
+
 </script>
 </head>
 
-<body onclick="loadDrivers(param)">
-	<h1>Drivers</h1>
+<body onload="loadUsers(param)">
     <span class="metadata-marker" style="display: none;" data-region_tag="html-body"></span>
     <div id="map"></div>
-    <div id="drivers">Trying to determine drivers...</div>
+    <div id="users">Trying to determine drivers...</div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9sQaGQMUn1TEZG3C11LjRlpQAppS4WGk&callback=initMap" async defer>
 	</script>
 </body>

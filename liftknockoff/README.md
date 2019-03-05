@@ -9,6 +9,8 @@ README.md
 
 I consulted these websites:
 https://stackoverflow.com/questions/11667838/how-do-i-get-an-addresses-latitude-longitude-using-html5-geolocation-or-google-a
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
 
+I collaborated with: Noah Zhang & Peter Gramaglia
 
 3. Say approximately how many hours you have spent completing the assignment.
