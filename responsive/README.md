@@ -1,5 +1,5 @@
 Amber Chong
-READ.me
+README.md
 Lab #2
 
 1. I have implemented a responsive image in relation to screen width size.

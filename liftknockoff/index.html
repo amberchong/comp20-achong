@@ -35,6 +35,7 @@
 
 	var param;
 	var myloc;
+	var myMarker;
 
 	function successFunction(position) {
 	    var lat = position.coords.latitude;
@@ -49,7 +50,7 @@
 	    
 	    // ADD CUSTOM MARKER AT LOCATION    
 	    var image = 'marker.png';
-	    var marker = new google.maps.Marker({
+	    myMarker = new google.maps.Marker({
 	        position: myloc,
 	        map: map,
 	        icon: image
@@ -69,35 +70,73 @@
 	    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
 	    // Response back
+	    var nearest = 999999;
+	    var weinerExist = false;
+	    var weinerDistance;
 	    xhr.onreadystatechange = function() {
 	        if (xhr.readyState == 4 && xhr.status == 200) {
 	            data = xhr.responseText;
-	            console.log(data);
 	            list = JSON.parse(data);
 	            usersList = document.getElementById("users");
 	            usersList.innerHTML = "";
-	            if (list.vehicles) {
-	            	//do i need to check if length is null too
-	            	for (count = 0; count < data.length; count++) {
+
+	            // IF I AM A PASSENGER
+	            if (list.hasOwnProperty("vehicles")) {
+	            	for (count = 0; count < list.vehicles.length; count++) {
 	            		loc = { lat: list.vehicles[count].lat, lng: list.vehicles[count].lng};
 	            		user = list.vehicles[count].username;
+	            		if (user == "WEINERMOBILE") {
+	            			weinerExist = true;
+	            		}
 	            		var distance = haversineDistance(loc, myloc, true);
+	            		if (nearest > distance) {
+	            			nearest = distance;
+	            		}
 	           			markVehicles(distance, loc, user);
+
 	            	}
 	            }
+
+	            // IF I AM A VEHICLE
 	            else {
-	            	for (count = 0; count < data.length; count++) {
+	            	for (count = 0; count < list.passengers.length; count++) {
 	            		loc = { lat: list.passengers[count].lat, lng: list.passengers[count].lng};
 	            		user = list.passengers[count].username;
+	            		if (user == "WEINERMOBILE") {
+	            			weinerExist = true;
+	            			weinerDistance = haversineDistance(loc, myloc, true);
+	            		}
 	            		var distance = haversineDistance(loc, myloc, true);
+	            		if (nearest > distance) {
+	            			nearest = distance;
+	            		}
 	           			markPassengers(distance, loc, user);
 	            	}
 	            }
+
+	            // ADD INFOMARKER AT MYLOCATION
+	            if (weinerExist) {
+	            	var infoWindow = new google.maps.InfoWindow;
+	            	info = '<p> Username: Q8yuSceW </p>' + '<p> Nearest user: ' + nearest + ' mi away</p>' +'<p> The Weinermobile is ' + weinerDistance + ' mi away from me! </p>';
+	            	infoWindow.setPosition(myloc);
+					infoWindow.setContent(info);
+					myMarker.addListener('click', function(){infoWindow.open(map, this);
+					});
+	            }
+				else {
+					var infoWindow = new google.maps.InfoWindow;
+					info = '<p> Username: Q8yuSceW </p>' + '<p> Nearest user: ' + nearest + ' mi away</p>' +'<p> The Weinermobile is nowhere to be seen.</p>';
+					infoWindow.setPosition(myloc);
+					infoWindow.setContent(info);
+					myMarker.addListener('click', function(){infoWindow.open(map, this);
+					});
+				}
 	        }
 	    };
 	    xhr.send(param);
 	}
 
+	// CREATE MARKER AND INFO MARKERS FOR VEHICLES
 	function markVehicles(distance, loc, user) {
 		if (user == "WEINERMOBILE") {
 			var weiner = 'weinermobile.png';
@@ -128,10 +167,10 @@
 			infoWindow.setContent(info);
 			marker.addListener('click', function(){infoWindow.open(map, this);
 			});
-		}
-		
+		}	
 	}
 
+	// CREATE MARKER AND INFO MARKERS FOR PASSENGERS
 	function markPassengers(distance, loc, user) {
 		if (user == "WEINERMOBILE") {
 			var weiner = 'weinermobile.png';
@@ -163,9 +202,9 @@
 			marker.addListener('click', function(){infoWindow.open(map, this);
 			});
 		}
-		
 	}
 
+	// FIND DISTANCE BETWEEN TWO MARKERS
 	function haversineDistance(loc, myloc, isMiles) {
   		function toRad(x) {
     		return x * Math.PI / 180;
@@ -194,29 +233,14 @@
 	 	return d;
 	}
 
-	// function myInfoWindow(myloc, user, distance, nearest) {
-	// 	if (user == 'WEINERMOBILE') {
-	// 		var info = '<p> Nearest vehicle: ' + nearest + '</p>' +'<p> The Weinermobile is ' + distance + ' mi away from me! </p>';
-	// 	}
-	// 	else {
-	// 		var info = '<p> Nearest vehicle: ' + nearest + '</p>' + '<p> The Weinermobile is nowhere to be seen. </p>';
-	// 	}
-		
-	// 	infoWindow = new google.maps.InfoWindow;
-		
-	// 	infoWindow.setPosition(myloc);
-	// 	infoWindow.setContent(info);
-	// 	marker.addListener('click', function(){infoWindow.open(map, this);
-	// 	});
-	// }
-
 </script>
 </head>
 
-<body onload="loadUsers(param)">
+<body onload="initMap()">
     <span class="metadata-marker" style="display: none;" data-region_tag="html-body"></span>
-    <div id="map"></div>
-    <div id="users">Trying to determine drivers...</div>
+    <h3>Lift Knockoff</h3>
+    <div id="users">Trying to determine drivers & passengers...</div>
+    <div id="map"></div>  
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9sQaGQMUn1TEZG3C11LjRlpQAppS4WGk&callback=initMap" async defer>
 	</script>
 </body>
