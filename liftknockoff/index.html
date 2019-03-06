@@ -87,13 +87,13 @@
 	            		user = list.vehicles[count].username;
 	            		if (user == "WEINERMOBILE") {
 	            			weinerExist = true;
+	            			weinerDistance = haversineDistance(loc, myloc, true);
 	            		}
 	            		var distance = haversineDistance(loc, myloc, true);
 	            		if (nearest > distance) {
 	            			nearest = distance;
 	            		}
 	           			markVehicles(distance, loc, user);
-
 	            	}
 	            }
 
