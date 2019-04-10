@@ -61,14 +61,15 @@
 	function loadUsers(param) {
 		// Make an instance of xhr
 	    xhr = new XMLHttpRequest();
-	    var url = 'https://hans-moleman.herokuapp.com/rides';
-
+	    var url = 'https://radiant-mountain-10822.herokuapp.com/rides';
+	    // 'https://hans-moleman.herokuapp.com/rides'
+	   
 	    // Make request to JSON source
 	    xhr.open('POST', url, true);
 
 	    // Send header information along with request
 	    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
+	
 	    // Response back
 	    var nearest = 999999;
 	    var weinerExist = false;
@@ -76,7 +77,9 @@
 	    xhr.onreadystatechange = function() {
 	        if (xhr.readyState == 4 && xhr.status == 200) {
 	            data = xhr.responseText;
+	            console.log(data);
 	            list = JSON.parse(data);
+	            console.log(list);
 	            usersList = document.getElementById("users");
 	            usersList.innerHTML = "";
 
