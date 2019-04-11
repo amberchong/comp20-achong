@@ -57,11 +57,12 @@
 	    });
 	    loadUsers(param);
 	}
-
+	
 	function loadUsers(param) {
 		// Make an instance of xhr
 	    xhr = new XMLHttpRequest();
 	    var url = 'https://radiant-mountain-10822.herokuapp.com/rides';
+	    // 'https://hans-moleman.herokuapp.com/rides'
 	   
 	    // Make request to JSON source
 	    xhr.open('POST', url, true);
@@ -80,11 +81,10 @@
 	            usersList = document.getElementById("users");
 	            usersList.innerHTML = "";
 
-	            // if (list == null) {}
 	            // IF I AM A PASSENGER
-	            else if (list.hasOwnProperty("vehicles")) {
+	            if (list.hasOwnProperty("vehicles")) {
 	            	for (count = 0; count < list.vehicles.length; count++) {
-	            		loc = { lat: list.vehicles[count].lat, lng: list.vehlicles[count].lng};
+	            		loc = { lat: list.vehicles[count].lat, lng: list.vehicles[count].lng};
 	            		user = list.vehicles[count].username;
 	            		if (user == "WEINERMOBILE") {
 	            			weinerExist = true;
@@ -97,6 +97,7 @@
 	           			markVehicles(distance, loc, user);
 	            	}
 	            }
+
 	            // IF I AM A VEHICLE
 	            else {
 	            	for (count = 0; count < list.passengers.length; count++) {
